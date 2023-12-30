@@ -36,28 +36,43 @@ export default {
   },
   methods: {
     submit() {
-      this.$axios
-        .post(
-          "/app/login/",
-          this.qs.stringify({
-            account: this.account,
-            password: this.password
-          }),
-          {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" }
-          }
-        )
-        .then(res => {
-          const { result, isadmin } = res.data;
-          if (!result) this.$message.error("登录失败");
-          else {
-            if (isadmin) {
-              this.$router.push({ path: "/serverList" });
-            } else {
-              this.$router.push({ path: "/operatorList" });
-            }
-          }
-        });
+      // this.$axios
+      //   .post(
+      //     "/app/login/",
+      //     this.qs.stringify({
+      //       account: this.account,
+      //       password: this.password
+      //     }),
+      //     {
+      //       headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      //     }
+      //   )
+      //   .then(res => {
+      //     const { result, isadmin } = res.data;
+      //     if (!result) this.$message.error("登录失败");
+      //     else {
+      //       if (isadmin) {
+      //         this.$router.push({ path: "/serverList" });
+      //       } else {
+      //         this.$router.push({ path: "/operatorList" });
+      //       }
+      //     }
+      //   });
+      // 假设登录总是成功
+      const isLoginSuccess = true;
+
+      // 假设用户总是管理员
+      const isAdmin = false;
+
+      if (isLoginSuccess) {
+        if (isAdmin) {
+          this.$router.push({ path: "/serverList" });
+        } else {
+          this.$router.push({ path: "/operatorList" });
+        }
+      } else {
+        this.$message.error("登录失败");
+      }
     }
   }
 };

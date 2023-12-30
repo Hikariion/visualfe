@@ -2,7 +2,7 @@
   <div>
     <userRouter />
     <div class="d-flex" style="padding:20px 10px">
-      <h2 style="front-size:20px;font-weight:500">遥感图像处理</h2>
+      <h2 style="front-size:20px;font-weight:500">流式计算任务</h2>
       <v-btn text color="primary" class="ml-auto" @click="saveApp">保存</v-btn>
     </div>
     <div
@@ -28,7 +28,7 @@
         </v-card-text>
       </v-card>
       <v-card class="flex-grow-1">
-        <v-card-title>遥感图像任务编排</v-card-title>
+        <v-card-title>流式计算任务编排</v-card-title>
         <v-card-text
           ><DAGBoard
             id="svgContent"
@@ -66,26 +66,40 @@ export default {
     return {
       currentInfo: { disabledInfo: [], abledInfo: [] },
       selectedItem: "",
-      Images: [{
-            name:"镜像名称",
-            id:2,
-            info:[
-              {
-                'id':2,
-                'name':"输入参数input名称",
-                'description':"参数名称",
-                'parameter_type':"input"
-            },
-            {
-                'id':2,
-                'name':"输出参数ou名称",
-                'description':"参数描述",
-                'parameter_type':"output"
-            }
-            ],
+      Images: [
+        // {
+        //   name:"矩阵乘法",
+        //   id:1,
+        //   info:[
+        //     {
+        //       'id':2,
+        //       'name':"输入参数input名称",
+        //       'description':"参数名称",
+        //       'parameter_type':"input"
+        //   },
+        //   {
+        //       'id':2,
+        //       'name':"输出参数ou名称",
+        //       'description':"参数描述",
+        //       'parameter_type':"output"
+        //   }
+        //   ],
+        //   input_num:1,
+        //   output_num:1
+        // },
+        {
+            name:"矩阵乘法",
+            id:1,
             input_num:1,
             output_num:1
-        }],
+        },
+        {
+          name:"矩阵加法",
+          id:2,
+          input_num:1,
+          output_num:1
+        }
+      ],
       dragValue: null,
       nodes: [],
       lines: [],
@@ -98,21 +112,13 @@ export default {
     document.getElementById("svgContent").oncontextmenu = function(e) {
       return false;
     };
-    this.$axios.post("/app/view_operator_list/").then(res => {
-      this.Images = res.data.operatorList;
-    });
-    this.$axios
-      .get("/app/view_app/", { params: { appID: this.appID } })
-      .then(res => {
-        this.nodes = res.data.nodes;
-        this.lines = res.data.lines;
-      });
-     this.nodes = JSON.parse(
-       '[{"pos_x":180,"pos_y":92,"taskID":4930,"node_location":"sallite","opInformation":{"name":"镜像名称","id":2,"info":[{"id":2,"name":"输入参数input名称","description":"参数名称","parameter_type":"input","value":"","export":false},{"id":2,"name":"输出参数ou名称","description":"参数描述","parameter_type":"output","value":"","export":false}],"input_num":1,"output_num":1},"type":"task"},{"pos_x":141,"pos_y":217,"taskID":3449,"node_location":"sallite","opInformation":{"name":"镜像名称","id":2,"info":[{"id":2,"name":"输入参数input名称","description":"参数名称","parameter_type":"input","value":"","export":false},{"id":2,"name":"输出参数ou名称","description":"参数描述","parameter_type":"output","value":"","export":false}],"input_num":1,"output_num":1},"type":"task"}]'
-   );
-     this.lines = JSON.parse(
-       '[{"from_node_circle":{"task":4930,"node_circle":1,"pos_x":273.1388854980469,"pos_y":127.11111450195312},"to_node_circle":{"task":3449,"node_circle":0,"pos_x":229.13888549804688,"pos_y":216.11111450195312}}]'
-     );
+
+   //   this.nodes = JSON.parse(
+   //     '[{"pos_x":180,"pos_y":92,"taskID":4930,"node_location":"sallite","opInformation":{"name":"镜像名称","id":2,"info":[{"id":2,"name":"输入参数input名称","description":"参数名称","parameter_type":"input","value":"","export":false},{"id":2,"name":"输出参数ou名称","description":"参数描述","parameter_type":"output","value":"","export":false}],"input_num":1,"output_num":1},"type":"task"},{"pos_x":141,"pos_y":217,"taskID":3449,"node_location":"sallite","opInformation":{"name":"镜像名称","id":2,"info":[{"id":2,"name":"输入参数input名称","description":"参数名称","parameter_type":"input","value":"","export":false},{"id":2,"name":"输出参数ou名称","description":"参数描述","parameter_type":"output","value":"","export":false}],"input_num":1,"output_num":1},"type":"task"}]'
+   // );
+   //   this.lines = JSON.parse(
+   //     '[{"from_node_circle":{"task":4930,"node_circle":1,"pos_x":273.1388854980469,"pos_y":127.11111450195312},"to_node_circle":{"task":3449,"node_circle":0,"pos_x":229.13888549804688,"pos_y":216.11111450195312}}]'
+   //   );
   },
   methods: {
     initPos() {
@@ -244,25 +250,6 @@ export default {
       }
       console.log(JSON.stringify(this.nodes))
       console.log(JSON.stringify(this.lines))
-      this.$axios
-        .post(
-          "/app/save_app/",
-          this.qs.stringify({
-            appID: this.appID,
-            nodes: JSON.stringify(this.nodes),
-            lines: JSON.stringify(this.lines)
-          }),
-          {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" }
-          }
-        )
-        .then(res => {
-          const { data } = res;
-          if (data.status == 0) this.$router.push({ path: "/appList" });
-          else {
-            this.$message.error(data.msg);
-          }
-        });
     },
     isObject(o) {
       return (typeof o === "object" || typeof o === "function") && o !== null;
